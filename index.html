@@ -62,7 +62,6 @@
 </div>
 
 <script>
-// L.mapbox.accessToken = 'pk.eyJ1IjoiZ3NjcGxhbm5pbmciLCJhIjoiRVZMNXpsQSJ9.5OxUlJTCDplPkdkKNlB91A';
 
 // base layers
 var streets = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.night/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
@@ -106,7 +105,7 @@ var baseMaps = {
   "Street + Satellite": hybrid
 };
 
-L.control.layers(baseMaps, null, {collapsed: false}).setPosition('bottomright').addTo(map);
+L.control.layers(baseMaps, null, {collapsed: false}).setPosition('bottomleft').addTo(map);
 
 var featureLayer
 
@@ -124,11 +123,6 @@ $.getJSON("./data/gtownInlet_wgs84.geojson", function(data) {
       featureLayer.addTo(map);
     });
 
-
-
-// var featureLayer = L.mapbox.featureLayer()
-//   .loadURL('./data/gtownInlet_wgs84.geojson')
-//   .addTo(map);
 
 document.getElementById('navigation').onclick = function(e) {
     e.preventDefault();
