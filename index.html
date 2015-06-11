@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Navigate to places on a map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<script src="js/leaflet.defaultextent.js"></script>
+<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<link rel="stylesheet" href="js/leaflet.defaultextent.css" />
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+<body>
+
+<style>
+.menu-ui {
+  background:#fff;
+  position:absolute;
+  top:10px;right:10px;
+  z-index:1;
+  border-radius:3px;
+  width:120px;
+  border:1px solid rgba(0,0,0,0.4);
+  }
+  .menu-ui a {
+    font-size:13px;
+    font-family: 'Open Sans', sans-serif;
+    color:#404040;
+    display:block;
+    margin:0;padding:0;
+    padding:10px;
+    text-decoration:none;
+    border-bottom:1px solid rgba(0,0,0,0.25);
+    text-align:center;
+    }
+    .menu-ui a:first-child {
+      border-radius:3px 3px 0 0;
+      }
+    .menu-ui a:last-child {
+      border:none;
+      border-radius:0 0 3px 3px;
+      }
+    .menu-ui a:hover {
+      background:#f8f8f8;
+      color:#404040;
+      }
+</style>
+
+<div id='map'></div>
+<div id='navigation' class='menu-ui'>
+  <a href='#' data-position='38.192684, -84.570061' data-zoom='17'>Bradford Place &amp; Hambrick Place</a>
+  <a href='#' data-position='38.197288, -84.581841' data-zoom='18'>Paynes Crossing</a>
+  <a href='#' data-position='38.214560, -84.586036' data-zoom='17'>Canewood, The Enclave, &amp; Paynes Landing</a>
+  <a href='#' data-position='38.205567, -84.583408' data-zoom='18'>Ward Hall &amp; McClelland Springs</a>
+  <a href='#' data-position='38.187917, -84.553421' data-zoom='17'>Mt. Vernon &amp; Southpoint</a>
+</div>
+
+<script>
+// L.mapbox.accessToken = 'pk.eyJ1IjoiZ3NjcGxhbm5pbmciLCJhIjoiRVZMNXpsQSJ9.5OxUlJTCDplPkdkKNlB91A';
+
+// base layers
+var streets = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.night/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+  attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+  subdomains: '1234',
+  mapID: 'newest',
+  app_id: 'Y8m9dK2brESDPGJPdrvs',
+  app_code: 'dq2MYIvjAotR8tHvY8Q_Dg',
+  base: 'base',
+  maxZoom: 20
+});
+
+var satellite = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/satellite.day/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+  attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+  subdomains: '1234',
+  mapID: 'newest',
+  app_id: 'Y8m9dK2brESDPGJPdrvs',
+  app_code: 'dq2MYIvjAotR8tHvY8Q_Dg',
+  base: 'aerial',
+  maxZoom: 20
+});
+
+var hybrid = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/hybrid.day/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
+  attribution: 'Map &copy; 1987-2014 <a href="http://developer.here.com">HERE</a>',
+  subdomains: '1234',
+  mapID: 'newest',
+  app_id: 'Y8m9dK2brESDPGJPdrvs',
+  app_code: 'dq2MYIvjAotR8tHvY8Q_Dg',
+  base: 'aerial',
+  maxZoom: 20
+});
+
+var map = L.map('map', {
+  defaultExtentControl: true,
+  layers: [streets]
+}).setView([38.209985, -84.559826], 14);
+
+var baseMaps = {
+  "Streets": streets,
+  "Satellite": satellite,
+  "Street + Satellite": hybrid
+};
+
+L.control.layers(baseMaps, null, {collapsed: false}).setPosition('bottomright').addTo(map);
+
+var featureLayer
+
+var purpleIcon = L.icon({
+  iconUrl: 'img/yellow-icon.svg',
+  iconSize: [6,6]
+});
+
+$.getJSON("./data/gtownInlet_wgs84.geojson", function(data) {
+      featureLayer = new L.geoJson(data, {
+        pointToLayer: function (feature, latlng) {
+          return L.marker(latlng, {icon: purpleIcon});
+        }
+      });
+      featureLayer.addTo(map);
+    });
+
+
+
+// var featureLayer = L.mapbox.featureLayer()
+//   .loadURL('./data/gtownInlet_wgs84.geojson')
+//   .addTo(map);
+
+document.getElementById('navigation').onclick = function(e) {
+    e.preventDefault();
+    var pos = e.target.getAttribute('data-position');
+    var zoo = e.target.getAttribute('data-zoom');
+    if (pos) {
+        var loc = pos.split(',');
+        map.setView(loc, zoo);
+    }
+}
+</script>
+
+
+</body>
+</html>
