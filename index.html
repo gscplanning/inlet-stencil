@@ -9,6 +9,7 @@
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 <script src="js/leaflet.defaultextent.js"></script>
 <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script src="https://cdn.rawgit.com/calvinmetcalf/leaflet-ajax/master/dist/leaflet.ajax.min.js"></script>
 
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 <link rel="stylesheet" href="js/leaflet.defaultextent.css" />
@@ -51,6 +52,13 @@
       background:#f8f8f8;
       color:#404040;
       }
+
+    .mydivicon{
+      border-radius: 10px;
+      background: #8e44ad;
+      border: 1px solid #ffffff;
+      opacity: 1
+}
 </style>
 
 <div id='map'></div>
@@ -63,6 +71,7 @@
 </div>
 
 <script>
+$.ajaxSetup({ cache: false });
 
 // base layers
 var streets = L.tileLayer('http://{s}.{base}.maps.cit.api.here.com/maptile/2.1/maptile/{mapID}/normal.night/{z}/{x}/{y}/256/png8?app_id={app_id}&app_code={app_code}', {
@@ -110,19 +119,41 @@ L.control.layers(baseMaps, null, {collapsed: false}).setPosition('bottomleft').a
 
 var featureLayer
 
-var purpleIcon = L.icon({
-  iconUrl: 'img/yellow-icon.svg',
+
+
+// var circleMarkerOptions = {
+//   radius: 8,
+//   fillColor: '#9b59b6',
+//   color: '#ffffff',
+//   weight: 1
+// }
+
+
+var icon = new L.divIcon({
+  className: 'mydivicon',
   iconSize: [6,6]
 });
 
 $.getJSON("./data/gtownInlet_wgs84.geojson", function(data) {
       featureLayer = new L.geoJson(data, {
         pointToLayer: function (feature, latlng) {
-          return L.marker(latlng, {icon: purpleIcon});
+          return L.marker(latlng, {icon: icon});
         }
       });
       featureLayer.addTo(map);
     });
+
+
+
+// var geojsonLayer = new L.GeoJSON.AJAX("./data/gtownInlet_wgs84.geojson");
+
+// L.geoJson(geojsonLayer, {
+//   pointToLayer: function (feature, latlng) {
+//     return L.circleMarker(latlng, circleMarkerOptions);
+//   }
+// }).addTo(map);
+
+// geojsonLayer.addTo(map);
 
 
 document.getElementById('navigation').onclick = function(e) {
